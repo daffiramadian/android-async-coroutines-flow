@@ -57,7 +57,8 @@ fun NavigationLabApp() {
                 onOpenAbout = {
                     navController.navigate(Routes.ABOUT)
                 },
-                onRetry = homeViewModel::retry
+                onRetry = homeViewModel::retry,
+                onRefresh = homeViewModel::refresh
             )
         }
 

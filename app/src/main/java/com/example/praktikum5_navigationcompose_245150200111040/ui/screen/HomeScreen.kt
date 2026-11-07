@@ -26,7 +26,8 @@ fun HomeScreen(
     onStudentClick: (Int) -> Unit,
     onOpenProfile: () -> Unit,
     onOpenAbout: () -> Unit,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    onRefresh: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -79,6 +80,15 @@ fun HomeScreen(
                 label = { Text("Cari profil") },
                 singleLine = true
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Button(
+                onClick = onRefresh,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Refresh")
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 

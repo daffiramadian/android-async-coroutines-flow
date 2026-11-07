@@ -64,25 +64,33 @@ class HomeViewModel(
     }
 
     fun retry() {
-        val query = searchQuery.value
-
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+            fetchStudents(searchQuery.value)
+        }
+    }
 
-            try {
-                val data = if (query.isBlank()) {
-                    repository.getStudents()
-                } else {
-                    repository.searchStudents(query)
-                }
-                _uiState.value = HomeUiState(students = data)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                _uiState.value = HomeUiState(
-                    errorMessage = e.message ?: "Request gagal"
-                )
+    fun refresh() {
+        viewModelScope.launch {
+            fetchStudents(searchQuery.value)
+        }
+    }
+
+    private suspend fun fetchStudents(query: String) {
+        _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+
+        try {
+            val data = if (query.isBlank()) {
+                repository.getStudents()
+            } else {
+                repository.searchStudents(query)
             }
+            _uiState.value = HomeUiState(students = data)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            _uiState.value = HomeUiState(
+                errorMessage = e.message ?: "Request gagal"
+            )
         }
     }
 
