@@ -21,12 +21,12 @@ import com.example.praktikum5_navigationcompose_245150200111040.ui.home.HomeUiSt
 @Composable
 fun HomeScreen(
     uiState: HomeUiState,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
     onStudentClick: (Int) -> Unit,
     onOpenProfile: () -> Unit,
     onOpenAbout: () -> Unit,
-    onRetry: () -> Unit,
-    onQueryChange: (String) -> Unit,
-    onSearch: () -> Unit
+    onRetry: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -72,27 +72,16 @@ fun HomeScreen(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // Search bar
-            Row(
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = onSearchQueryChange,
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedTextField(
-                    value = uiState.searchQuery,
-                    onValueChange = onQueryChange,
-                    modifier = Modifier.weight(1f),
-                    placeholder = { Text("Cari nama...") },
-                    singleLine = true
-                )
-                Button(onClick = onSearch) {
-                    Text("Cari")
-                }
-            }
+                label = { Text("Cari profil") },
+                singleLine = true
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Content area
             when {
                 uiState.isLoading -> {
                     Box(
@@ -110,7 +99,7 @@ fun HomeScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = uiState.errorMessage,
+                            text = uiState.errorMessage ?: "",
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.error
                         )

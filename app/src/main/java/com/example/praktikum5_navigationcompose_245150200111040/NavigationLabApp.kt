@@ -2,7 +2,9 @@ package com.example.praktikum5_navigationcompose_245150200111040
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -39,8 +41,13 @@ fun NavigationLabApp() {
                 factory = HomeViewModel.factory(repository)
             )
 
+            val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
+            val searchQuery by homeViewModel.searchQuery.collectAsStateWithLifecycle()
+
             HomeScreen(
-                uiState = homeViewModel.uiState,
+                uiState = uiState,
+                searchQuery = searchQuery,
+                onSearchQueryChange = homeViewModel::onSearchQueryChange,
                 onStudentClick = { id ->
                     navController.navigate(Routes.detail(id))
                 },
@@ -50,9 +57,7 @@ fun NavigationLabApp() {
                 onOpenAbout = {
                     navController.navigate(Routes.ABOUT)
                 },
-                onRetry = homeViewModel::loadStudents,
-                onQueryChange = homeViewModel::onSearchQueryChange,
-                onSearch = homeViewModel::search
+                onRetry = homeViewModel::retry
             )
         }
 
@@ -70,12 +75,14 @@ fun NavigationLabApp() {
                 factory = DetailViewModel.factory(repository)
             )
 
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
             LaunchedEffect(studentId) {
                 viewModel.loadStudent(studentId)
             }
 
             DetailScreen(
-                uiState = viewModel.uiState,
+                uiState = uiState,
                 onBack = { navController.popBackStack() }
             )
         }

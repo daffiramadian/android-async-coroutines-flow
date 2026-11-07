@@ -1,33 +1,36 @@
 package com.example.praktikum5_navigationcompose_245150200111040.ui.detail
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.example.praktikum5_navigationcompose_245150200111040.data.repository.StudentRepository
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class DetailViewModel(
     private val repository: StudentRepository
 ) : ViewModel() {
 
-    var uiState by mutableStateOf(DetailUiState())
-        private set
+    private val _uiState = MutableStateFlow(DetailUiState())
+    val uiState: StateFlow<DetailUiState> = _uiState.asStateFlow()
 
     fun loadStudent(id: Int) {
-        uiState = uiState.copy(isLoading = true, errorMessage = null, requestedId = id)
-
-        repository.getStudent(id) { result ->
-            result
-                .onSuccess { student ->
-                    uiState = DetailUiState(student = student, requestedId = id)
-                }
-                .onFailure { error ->
-                    uiState = DetailUiState(
-                        errorMessage = error.message ?: "Data tidak tersedia",
-                        requestedId = id
-                    )
-                }
+        _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null, requestedId = id)
+        viewModelScope.launch {
+            try {
+                val student = repository.getStudent(id)
+                _uiState.value = DetailUiState(student = student, requestedId = id)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _uiState.value = DetailUiState(
+                    errorMessage = e.message ?: "Data tidak tersedia",
+                    requestedId = id
+                )
+            }
         }
     }
 
