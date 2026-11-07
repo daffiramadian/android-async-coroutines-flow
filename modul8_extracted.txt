@@ -1,0 +1,132 @@
+LAPORAN PRAKTIKUM PEMROGAMAN LANJUT 
+ 
+BAB :   INTERFACE 
+NAMA :   DAFFI RAMADIAN 
+NIM :   245150200111040 
+ASISTEN :   Gilang Fachrul Huda 
+     Muhammad Raka Fadillah 
+TGL PRAKTIKUM :   22/04/2025 
+ 
+ 
+ 
+TUGAS PRAKTIKUM 
+Pertanyaan 
+ 
+ 
+Main 
+ package Modul8; 
+ 
+public class Main { 
+    public static void main(String[] args) { 
+        Invoice belanja1 = new Invoice("Kopi", 2, 
+15000); 
+        Invoice belanja2 = new Invoice("Snack", 3, 
+10000); 
+ 
+        Invoice[] daftarBelanja = { belanja1, belanja2 
+}; 
+        Employee karyawan = new Employee(101, "Budi", 
+2000000, daftarBelanja); 
+ 
+        Payable[] daftarPembayaran = { belanja1, 
+belanja2 }; 
+ 
+        System.out.println("=== Daftar Pembayaran ==="); 
+        for (Payable item : daftarPembayaran) { 
+            System.out.println("Jumlah yang harus 
+dibayar: " + item.getPayableAmount()); 
+        } 
+ 
+        System.out.println(); 
+        karyawan.printEmployeeInfo(); 
+    } 
+} 
+ 
+Payable 
+ package Modul8; 
+ 
+public interface Payable { 
+    double getPayableAmount(); 
+} 
+ 
+Employee 
+ package Modul8; 
+ 
+public class Employee implements Payable { 
+    private int registrationNumber; 
+    private String name;     private int salaryPerMonth; 
+    private Invoice[] invoices; 
+ 
+    public Employee(int registrationNumber, String name, 
+int salaryPerMonth, Invoice[] invoices) { 
+        this.registrationNumber = registrationNumber; 
+        this.name = name; 
+        this.salaryPerMonth = salaryPerMonth; 
+        this.invoices = invoices; 
+    } 
+ 
+    @Override 
+    public double getPayableAmount() { 
+        double totalBelanja = 0; 
+        for (Invoice belanjaan : invoices) { 
+            totalBelanja += 
+belanjaan.getPayableAmount(); 
+        } 
+        return salaryPerMonth - totalBelanja; 
+    } 
+ 
+    public void printEmployeeInfo() { 
+        System.out.println("==== Data Karyawan ===="); 
+        System.out.println("ID: " + registrationNumber); 
+        System.out.println("Nama: " + name); 
+        System.out.println("Gaji Bulanan: " + 
+salaryPerMonth); 
+        System.out.println("=== Detail Belanjaan ==="); 
+        for (Invoice belanjaan : invoices) { 
+            belanjaan.tampilkanDetail(); 
+        }         System.out.println("Total Gaji Setelah Potongan: 
+" + getPayableAmount()); 
+    } 
+} 
+ 
+Invoice 
+ package Modul8; 
+ 
+public class Invoice implements Payable { 
+    private String productName; 
+    private int quantity; 
+    private int pricePerItem; 
+ 
+    public Invoice(String productName, int quantity, int 
+pricePerItem) { 
+        this.productName = productName; 
+        this.quantity = quantity; 
+        this.pricePerItem = pricePerItem; 
+    } 
+ 
+    @Override 
+    public double getPayableAmount() { 
+        return quantity * pricePerItem; 
+    } 
+ 
+    public void tampilkanDetail() { 
+        System.out.println("Produk: " + productName); 
+        System.out.println("Jumlah: " + quantity); 
+        System.out.println("Harga per item: " + 
+pricePerItem); 
+        System.out.println("Total: " + 
+getPayableAmount());         System.out.println(); 
+    } 
+} 
+ 
+Screenshot 
+ 
+Penjelasan 
+Saya membuat interface payable dengan method getPayableAmount jadi tiap class employee 
+dan invoice harus menerapkan bagaimana jumlah pembayaran untuk belanja dan gaji. 
+kemudian dicetak menggunakan method printEmployeeInfo. Dan pada main beberapa 
+belanjaan ditambahan dalam array invoice 
+ 
+ 
+ 
+ 

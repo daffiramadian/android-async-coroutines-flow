@@ -18,8 +18,9 @@ class DetailViewModel(
     val uiState: StateFlow<DetailUiState> = _uiState.asStateFlow()
 
     fun loadStudent(id: Int) {
-        _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null, requestedId = id)
         viewModelScope.launch {
+            _uiState.value = DetailUiState(isLoading = true, requestedId = id)
+
             try {
                 val student = repository.getStudent(id)
                 _uiState.value = DetailUiState(student = student, requestedId = id)

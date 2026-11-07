@@ -8,15 +8,12 @@ class DefaultStudentRepository(
     private val remoteDataSource: StudentRemoteDataSource
 ) : StudentRepository {
 
-    override suspend fun getStudents(): List<Student> {
-        return remoteDataSource.getStudents().map { it.toStudent() }
-    }
+    override suspend fun getStudents(): List<Student> =
+        remoteDataSource.getStudents().map { it.toStudent() }
 
-    override suspend fun getStudent(id: Int): Student {
-        return remoteDataSource.getStudent(id).toStudent()
-    }
+    override suspend fun getStudent(id: Int): Student =
+        remoteDataSource.getStudent(id).toStudent()
 
-    override suspend fun searchStudents(query: String): List<Student> {
-        return remoteDataSource.searchStudents(query).map { it.toStudent() }
-    }
+    override suspend fun searchStudents(query: String): List<Student> =
+        remoteDataSource.searchStudents(query).map { it.toStudent() }
 }

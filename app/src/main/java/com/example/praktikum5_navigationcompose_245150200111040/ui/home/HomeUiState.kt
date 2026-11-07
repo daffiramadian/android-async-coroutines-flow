@@ -5,6 +5,5 @@ import com.example.praktikum5_navigationcompose_245150200111040.data.model.Stude
 data class HomeUiState(
     val students: List<Student> = emptyList(),
     val isLoading: Boolean = false,
-    val errorMessage: String? = null,
-    val searchQuery: String = ""
+    val errorMessage: String? = null
 )

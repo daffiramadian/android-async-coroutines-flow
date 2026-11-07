@@ -31,47 +31,58 @@ class HomeViewModel(
 
     private fun observeSearch() {
         viewModelScope.launch {
-            _searchQuery
+            searchQuery
                 .debounce(500)
                 .distinctUntilChanged()
                 .collectLatest { query ->
-                    performSearch(query)
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = true,
+                        errorMessage = null
+                    )
+
+                    try {
+                        val data = if (query.isBlank()) {
+                            repository.getStudents()
+                        } else {
+                            repository.searchStudents(query)
+                        }
+
+                        _uiState.value = HomeUiState(students = data)
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        _uiState.value = HomeUiState(
+                            errorMessage = e.message ?: "Pencarian gagal"
+                        )
+                    }
                 }
         }
     }
 
-    fun onSearchQueryChange(newQuery: String) {
-        _searchQuery.value = newQuery
-    }
-
-    private suspend fun performSearch(query: String) {
-        _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
-        try {
-            val trimmed = query.trim()
-            val result = if (trimmed.isEmpty()) {
-                repository.getStudents()
-            } else {
-                repository.searchStudents(trimmed)
-            }
-            _uiState.value = _uiState.value.copy(
-                students = result,
-                isLoading = false,
-                errorMessage = null
-            )
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            _uiState.value = _uiState.value.copy(
-                students = emptyList(),
-                isLoading = false,
-                errorMessage = e.message ?: "Terjadi kesalahan saat memuat data"
-            )
-        }
+    fun onSearchQueryChange(query: String) {
+        _searchQuery.value = query
     }
 
     fun retry() {
+        val query = searchQuery.value
+
         viewModelScope.launch {
-            performSearch(_searchQuery.value)
+            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+
+            try {
+                val data = if (query.isBlank()) {
+                    repository.getStudents()
+                } else {
+                    repository.searchStudents(query)
+                }
+                _uiState.value = HomeUiState(students = data)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _uiState.value = HomeUiState(
+                    errorMessage = e.message ?: "Request gagal"
+                )
+            }
         }
     }
 
